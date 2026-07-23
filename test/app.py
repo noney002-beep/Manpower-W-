@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-app.py â€” (W) Manpower Map backend
+app.py — (W) Manpower Map backend
 
-à¸§à¸´à¸˜à¸µà¸£à¸±à¸™ (à¸žà¸±à¸’à¸™à¸²/à¸—à¸”à¸ªà¸­à¸šà¹ƒà¸™à¹€à¸„à¸£à¸·à¹ˆà¸­à¸‡):
+วิธีรัน (พัฒนา/ทดสอบในเครื่อง):
     pip install -r requirements.txt
-    set FLASK_SECRET_KEY=<random string à¸¢à¸²à¸§à¹†>      (Windows: set, macOS/Linux: export)
-    set COOKIE_SECURE=0                              (à¹ƒà¸ªà¹ˆà¹€à¸‰à¸žà¸²à¸°à¸•à¸­à¸™à¸—à¸”à¸ªà¸­à¸šà¸œà¹ˆà¸²à¸™ http:// à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™)
+    set FLASK_SECRET_KEY=<random string ยาวๆ>      (Windows: set, macOS/Linux: export)
+    set COOKIE_SECURE=0                              (ใส่เฉพาะตอนทดสอบผ่าน http:// เท่านั้น)
     python app.py
-    à¹€à¸›à¸´à¸” http://127.0.0.1:5000/
+    เปิด http://127.0.0.1:5000/
 
-à¸§à¸´à¸˜à¸µà¸£à¸±à¸™à¸ˆà¸£à¸´à¸‡ (production):
-    - à¸•à¹‰à¸­à¸‡à¸•à¸±à¹‰à¸‡à¸„à¹ˆà¸² FLASK_SECRET_KEY à¹€à¸›à¹‡à¸™à¸„à¹ˆà¸²à¸ªà¸¸à¹ˆà¸¡à¸—à¸µà¹ˆà¸„à¸²à¸”à¹€à¸”à¸²à¹„à¸¡à¹ˆà¹„à¸”à¹‰ (à¸«à¹‰à¸²à¸¡à¹ƒà¸Šà¹‰à¸„à¹ˆà¸² default)
-    - à¸•à¹‰à¸­à¸‡à¸£à¸±à¸™à¸œà¹ˆà¸²à¸™ HTTPS à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™ (à¹€à¸Šà¹ˆà¸™à¸œà¹ˆà¸²à¸™ reverse proxy à¸­à¸¢à¹ˆà¸²à¸‡ nginx + certbot)
-    - à¸­à¸¢à¹ˆà¸²à¸£à¸±à¸™à¸”à¹‰à¸§à¸¢ `python app.py` à¸•à¸£à¸‡à¹† à¹ƒà¸«à¹‰à¹ƒà¸Šà¹‰ WSGI server à¹€à¸Šà¹ˆà¸™:
+วิธีรันจริง (production):
+    - ต้องตั้งค่า FLASK_SECRET_KEY เป็นค่าสุ่มที่คาดเดาไม่ได้ (ห้ามใช้ค่า default)
+    - ต้องรันผ่าน HTTPS เท่านั้น (เช่นผ่าน reverse proxy อย่าง nginx + certbot)
+    - อย่ารันด้วย `python app.py` ตรงๆ ให้ใช้ WSGI server เช่น:
         gunicorn -w 4 -b 0.0.0.0:8000 app:app
-    - à¸•à¹‰à¸­à¸‡à¸£à¸±à¸™ migrate_db.py à¸à¹ˆà¸­à¸™à¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¸„à¸£à¸±à¹‰à¸‡à¹à¸£à¸ à¹€à¸žà¸·à¹ˆà¸­à¸ªà¸£à¹‰à¸²à¸‡à¸•à¸²à¸£à¸²à¸‡ staff / manpower_nodes
+    - ต้องรัน migrate_db.py ก่อนใช้งานครั้งแรก เพื่อสร้างตาราง staff / manpower_nodes
 
-à¸à¹ˆà¸­à¸™à¸£à¸±à¸™à¸•à¹‰à¸­à¸‡à¸¡à¸µà¹„à¸Ÿà¸¥à¹Œà¹€à¸«à¸¥à¹ˆà¸²à¸™à¸µà¹‰à¸­à¸¢à¸¹à¹ˆà¹‚à¸Ÿà¸¥à¹€à¸”à¸­à¸£à¹Œà¹€à¸”à¸µà¸¢à¸§à¸à¸±à¸™:
-    app.py, login.html, main.html, manpower_map.db (à¸œà¹ˆà¸²à¸™ migrate_db.py à¹à¸¥à¹‰à¸§)
+ก่อนรันต้องมีไฟล์เหล่านี้อยู่โฟลเดอร์เดียวกัน:
+    app.py, login.html, main.html, manpower_map.db (ผ่าน migrate_db.py แล้ว)
 """
 
 import os
@@ -54,23 +54,23 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.realpath(os.path.join(BASE_DIR, "manpower_map.db"))
 IMG_DIR = os.path.realpath(os.path.join(BASE_DIR, "img"))
 
-# à¸žà¸´à¸¡à¸žà¹Œ path à¹€à¸•à¹‡à¸¡à¸‚à¸­à¸‡à¹„à¸Ÿà¸¥à¹Œ DB à¸•à¸­à¸™à¹€à¸£à¸´à¹ˆà¸¡à¹‚à¸›à¸£à¹à¸à¸£à¸¡ à¹€à¸žà¸·à¹ˆà¸­à¹ƒà¸«à¹‰à¹€à¸Šà¹‡à¸„à¸‡à¹ˆà¸²à¸¢à¹† à¸§à¹ˆà¸²
-# à¹„à¸Ÿà¸¥à¹Œà¸—à¸µà¹ˆ app.py à¹ƒà¸Šà¹‰à¸ˆà¸£à¸´à¸‡ à¸•à¸£à¸‡à¸à¸±à¸šà¹„à¸Ÿà¸¥à¹Œà¸—à¸µà¹ˆà¹€à¸£à¸²à¸à¸³à¸¥à¸±à¸‡à¹€à¸›à¸´à¸”à¸”à¸¹/à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸šà¸­à¸¢à¸¹à¹ˆà¸«à¸£à¸·à¸­à¹„à¸¡à¹ˆ
-# (à¸ªà¸²à¹€à¸«à¸•à¸¸à¸—à¸µà¹ˆà¸žà¸šà¸šà¹ˆà¸­à¸¢à¸—à¸µà¹ˆà¸ªà¸¸à¸”à¸‚à¸­à¸‡ "à¸ªà¸¡à¸±à¸„à¸£à¹à¸¥à¹‰à¸§à¸”à¸¹à¹€à¸«à¸¡à¸·à¸­à¸™à¸ªà¸³à¹€à¸£à¹‡à¸ˆà¹à¸•à¹ˆà¹„à¸¡à¹ˆà¸¡à¸µà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹ƒà¸™ DB"
-#  à¸„à¸·à¸­à¸¡à¸µà¹„à¸Ÿà¸¥à¹Œ manpower_map.db à¸‹à¹‰à¸³à¸à¸±à¸™à¸«à¸¥à¸²à¸¢à¸—à¸µà¹ˆà¹ƒà¸™à¹€à¸„à¸£à¸·à¹ˆà¸­à¸‡ à¹à¸¥à¹‰à¸§à¹„à¸›à¹€à¸›à¸´à¸”à¸”à¸¹à¸œà¸´à¸”à¹„à¸Ÿà¸¥à¹Œ)
+# พิมพ์ path เต็มของไฟล์ DB ตอนเริ่มโปรแกรม เพื่อให้เช็คง่ายๆ ว่า
+# ไฟล์ที่ app.py ใช้จริง ตรงกับไฟล์ที่เรากำลังเปิดดู/ตรวจสอบอยู่หรือไม่
+# (สาเหตุที่พบบ่อยที่สุดของ "สมัครแล้วดูเหมือนสำเร็จแต่ไม่มีข้อมูลใน DB"
+#  คือมีไฟล์ manpower_map.db ซ้ำกันหลายที่ในเครื่อง แล้วไปเปิดดูผิดไฟล์)
 def _safe_print_db_info():
     try:
         print("=" * 70)
-        print(f"[DB] à¹„à¸Ÿà¸¥à¹Œà¸à¸²à¸™à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸—à¸µà¹ˆ app.py à¸ˆà¸°à¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¸ˆà¸£à¸´à¸‡ (path à¹€à¸•à¹‡à¸¡): {DB_PATH}")
-        print(f"[DB] à¹„à¸Ÿà¸¥à¹Œà¸™à¸µà¹‰à¸¡à¸µà¸­à¸¢à¸¹à¹ˆà¸ˆà¸£à¸´à¸‡à¸«à¸£à¸·à¸­à¹„à¸¡à¹ˆà¸•à¸­à¸™à¹€à¸£à¸´à¹ˆà¸¡à¹‚à¸›à¸£à¹à¸à¸£à¸¡: {os.path.exists(DB_PATH)}")
+        print(f"[DB] ไฟล์ฐานข้อมูลที่ app.py จะใช้งานจริง (path เต็ม): {DB_PATH}")
+        print(f"[DB] ไฟล์นี้มีอยู่จริงหรือไม่ตอนเริ่มโปรแกรม: {os.path.exists(DB_PATH)}")
         print("=" * 70)
     except UnicodeEncodeError:
         # stdout may not support these characters on some Windows consoles (cp1252)
         try:
             out = sys.stdout.buffer
             out.write(("=" * 70 + "\n").encode("utf-8"))
-            out.write((f"[DB] à¹„à¸Ÿà¸¥à¹Œà¸à¸²à¸™à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸—à¸µà¹ˆ app.py à¸ˆà¸°à¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¸ˆà¸£à¸´à¸‡ (path à¹€à¸•à¹‡à¸¡): {DB_PATH}\n").encode("utf-8"))
-            out.write((f"[DB] à¹„à¸Ÿà¸¥à¹Œà¸™à¸µà¹‰à¸¡à¸µà¸­à¸¢à¸¹à¹ˆà¸ˆà¸£à¸´à¸‡à¸«à¸£à¸·à¸­à¹„à¸¡à¹ˆà¸•à¸­à¸™à¹€à¸£à¸´à¹ˆà¸¡à¹‚à¸›à¸£à¹à¸à¸£à¸¡: {os.path.exists(DB_PATH)}\n").encode("utf-8"))
+            out.write((f"[DB] ไฟล์ฐานข้อมูลที่ app.py จะใช้งานจริง (path เต็ม): {DB_PATH}\n").encode("utf-8"))
+            out.write((f"[DB] ไฟล์นี้มีอยู่จริงหรือไม่ตอนเริ่มโปรแกรม: {os.path.exists(DB_PATH)}\n").encode("utf-8"))
             out.write(("=" * 70 + "\n").encode("utf-8"))
         except Exception:
             # final fallback: ASCII-only
@@ -80,39 +80,39 @@ def _safe_print_db_info():
 
 _safe_print_db_info()
 
-MAX_FAILED_ATTEMPTS = 5          # à¸¥à¹‡à¸­à¸à¸šà¸±à¸à¸Šà¸µà¸Šà¸±à¹ˆà¸§à¸„à¸£à¸²à¸§à¸–à¹‰à¸²à¹ƒà¸ªà¹ˆà¸£à¸«à¸±à¸ªà¸œà¸´à¸”à¹€à¸à¸´à¸™à¸ˆà¸³à¸™à¸§à¸™à¸™à¸µà¹‰
+MAX_FAILED_ATTEMPTS = 5          # ล็อกบัญชีชั่วคราวถ้าใส่รหัสผิดเกินจำนวนนี้
 SESSION_HOURS = 8
 SESSION_HOURS_REMEMBER = 24 * 30
-LOGIN_RATE_LIMIT = 10            # à¸ˆà¸³à¸™à¸§à¸™à¸„à¸£à¸±à¹‰à¸‡à¸—à¸µà¹ˆà¸¢à¸­à¸¡à¹ƒà¸«à¹‰à¸¥à¸­à¸‡ login à¸•à¹ˆà¸­ IP
-LOGIN_RATE_WINDOW_SECONDS = 300  # à¸•à¹ˆà¸­à¸Šà¹ˆà¸§à¸‡à¹€à¸§à¸¥à¸² 5 à¸™à¸²à¸—à¸µ
-REGISTER_RATE_LIMIT = 5          # à¸ˆà¸³à¸™à¸§à¸™à¸„à¸£à¸±à¹‰à¸‡à¸—à¸µà¹ˆà¸¢à¸­à¸¡à¹ƒà¸«à¹‰à¸ªà¸¡à¸±à¸„à¸£à¸šà¸±à¸à¸Šà¸µà¸•à¹ˆà¸­ IP
-REGISTER_RATE_WINDOW_SECONDS = 600  # à¸•à¹ˆà¸­à¸Šà¹ˆà¸§à¸‡à¹€à¸§à¸¥à¸² 10 à¸™à¸²à¸—à¸µ
-# à¸ªà¸´à¸—à¸˜à¸´à¹Œà¹à¸à¹‰à¹„à¸‚à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸•à¹‰à¸­à¸‡à¸žà¸´à¸ˆà¸²à¸£à¸“à¸²à¸—à¸±à¹‰à¸‡à¸•à¸³à¹à¸«à¸™à¹ˆà¸‡à¹à¸¥à¸°à¸à¹ˆà¸²à¸¢à¸ˆà¸²à¸à¸à¸²à¸™à¸‚à¹‰à¸­à¸¡à¸¹à¸¥ à¹„à¸¡à¹ˆà¹€à¸Šà¸·à¹ˆà¸­à¸„à¹ˆà¸²
-# à¹ƒà¸™ session/cookie à¹€à¸žà¸£à¸²à¸°à¸ªà¸²à¸¡à¸²à¸£à¸–à¹€à¸à¹ˆà¸² à¸«à¸£à¸·à¸­à¸–à¸¹à¸à¹à¸à¹‰à¹„à¸‚à¹„à¸”à¹‰à¸ˆà¸²à¸à¸à¸±à¹ˆà¸‡ browser
+LOGIN_RATE_LIMIT = 10            # จำนวนครั้งที่ยอมให้ลอง login ต่อ IP
+LOGIN_RATE_WINDOW_SECONDS = 300  # ต่อช่วงเวลา 5 นาที
+REGISTER_RATE_LIMIT = 5          # จำนวนครั้งที่ยอมให้สมัครบัญชีต่อ IP
+REGISTER_RATE_WINDOW_SECONDS = 600  # ต่อช่วงเวลา 10 นาที
+# สิทธิ์แก้ไขข้อมูลต้องพิจารณาทั้งตำแหน่งและฝ่ายจากฐานข้อมูล ไม่เชื่อค่า
+# ใน session/cookie เพราะสามารถเก่า หรือถูกแก้ไขได้จากฝั่ง browser
 #
-# à¹ƒà¸«à¹‰à¸ªà¸´à¸—à¸˜à¸´à¹Œà¹€à¸‰à¸žà¸²à¸°à¸•à¸³à¹à¸«à¸™à¹ˆà¸‡à¸—à¸µà¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¸¡à¸­à¸šà¸«à¸¡à¸²à¸¢à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™:
-# - à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸à¹ˆà¸²à¸¢ IT
-# - à¸«à¸±à¸§à¸«à¸™à¹‰à¸²à¸‡à¸²à¸™
-# - à¹€à¸ˆà¹‰à¸²à¸«à¸™à¹‰à¸²à¸—à¸µà¹ˆà¸à¹ˆà¸²à¸¢à¸šà¸¸à¸„à¸„à¸¥
-# - à¸à¹ˆà¸²à¸¢ ES
-# - à¸«à¸±à¸§à¸«à¸™à¹‰à¸²à¸à¹ˆà¸²à¸¢ IT
+# ให้สิทธิ์เฉพาะตำแหน่งที่ได้รับมอบหมายเท่านั้น:
+# - พนักงานฝ่าย IT
+# - หัวหน้างาน
+# - เจ้าหน้าที่ฝ่ายบุคคล
+# - ฝ่าย ES
+# - หัวหน้าฝ่าย IT
 #
-# à¹€à¸à¹‡à¸šà¸•à¸³à¹à¸«à¸™à¹ˆà¸‡à¹à¸¥à¸°à¸à¹ˆà¸²à¸¢à¹à¸¢à¸à¸à¸±à¸™ à¸ˆà¸¶à¸‡à¸•à¸£à¸§à¸ˆà¹€à¸›à¹‡à¸™à¸„à¸¹à¹ˆà¹€à¸žà¸·à¹ˆà¸­à¹„à¸¡à¹ˆà¹ƒà¸«à¹‰ "à¸žà¸™à¸±à¸à¸‡à¸²à¸™" à¸‚à¸­à¸‡à¸à¹ˆà¸²à¸¢à¸­à¸·à¹ˆà¸™
-# à¹„à¸”à¹‰à¸ªà¸´à¸—à¸˜à¸´à¹Œà¹„à¸›à¸”à¹‰à¸§à¸¢à¹‚à¸”à¸¢à¹„à¸¡à¹ˆà¹„à¸”à¹‰à¸•à¸±à¹‰à¸‡à¹ƒà¸ˆ
-IT_DEPARTMENT = "à¸à¹ˆà¸²à¸¢ IT"
-HR_DEPARTMENT = "à¸à¹ˆà¸²à¸¢à¸—à¸£à¸±à¸žà¸¢à¸²à¸à¸£à¸šà¸¸à¸„à¸„à¸¥"
-ES_DEPARTMENT = "à¸à¹ˆà¸²à¸¢ ES"
-EDITABLE_ROLES = ("à¸«à¸±à¸§à¸«à¸™à¹‰à¸²à¸‡à¸²à¸™", "à¹€à¸ˆà¹‰à¸²à¸«à¸™à¹‰à¸²à¸—à¸µà¹ˆà¸à¹ˆà¸²à¸¢à¸šà¸¸à¸„à¸„à¸¥", "à¸à¹ˆà¸²à¸¢ ES", "à¸«à¸±à¸§à¸«à¸™à¹‰à¸²à¸à¹ˆà¸²à¸¢ IT")
+# เก็บตำแหน่งและฝ่ายแยกกัน จึงตรวจเป็นคู่เพื่อไม่ให้ "พนักงาน" ของฝ่ายอื่น
+# ได้สิทธิ์ไปด้วยโดยไม่ได้ตั้งใจ
+IT_DEPARTMENT = "ฝ่าย IT"
+HR_DEPARTMENT = "ฝ่ายทรัพยากรบุคคล"
+ES_DEPARTMENT = "ฝ่าย ES"
+EDITABLE_ROLES = ("หัวหน้างาน", "เจ้าหน้าที่ฝ่ายบุคคล", "ฝ่าย ES", "หัวหน้าฝ่าย IT")
 EDITABLE_DEPARTMENTS = (IT_DEPARTMENT, HR_DEPARTMENT, ES_DEPARTMENT)
 EDITABLE_ROLE_DEPARTMENT_PAIRS = frozenset({
-    ("à¸žà¸™à¸±à¸à¸‡à¸²à¸™", IT_DEPARTMENT),
-    # à¸£à¸°à¸šà¸šà¹€à¸”à¸´à¸¡à¸šà¸±à¸™à¸—à¸¶à¸à¹€à¸ˆà¹‰à¸²à¸«à¸™à¹‰à¸²à¸—à¸µà¹ˆà¸à¹ˆà¸²à¸¢à¸šà¸¸à¸„à¸„à¸¥à¹à¸¥à¸°à¸à¹ˆà¸²à¸¢ ES à¹€à¸›à¹‡à¸™ role "à¸žà¸™à¸±à¸à¸‡à¸²à¸™"
-    # à¸£à¹ˆà¸§à¸¡à¸à¸±à¸šà¸Šà¸·à¹ˆà¸­à¸à¹ˆà¸²à¸¢ à¸ˆà¸¶à¸‡à¸£à¸­à¸‡à¸£à¸±à¸šà¸£à¸¹à¸›à¹à¸šà¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸™à¸µà¹‰à¸”à¹‰à¸§à¸¢
-    ("à¸žà¸™à¸±à¸à¸‡à¸²à¸™", HR_DEPARTMENT),
-    ("à¸žà¸™à¸±à¸à¸‡à¸²à¸™", ES_DEPARTMENT),
-    ("à¹€à¸ˆà¹‰à¸²à¸«à¸™à¹‰à¸²à¸—à¸µà¹ˆà¸à¹ˆà¸²à¸¢à¸šà¸¸à¸„à¸„à¸¥", HR_DEPARTMENT),
-    ("à¸à¹ˆà¸²à¸¢ ES", ES_DEPARTMENT),
-    ("à¸«à¸±à¸§à¸«à¸™à¹‰à¸²à¸à¹ˆà¸²à¸¢ IT", IT_DEPARTMENT),
+    ("พนักงาน", IT_DEPARTMENT),
+    # ระบบเดิมบันทึกเจ้าหน้าที่ฝ่ายบุคคลและฝ่าย ES เป็น role "พนักงาน"
+    # ร่วมกับชื่อฝ่าย จึงรองรับรูปแบบข้อมูลนี้ด้วย
+    ("พนักงาน", HR_DEPARTMENT),
+    ("พนักงาน", ES_DEPARTMENT),
+    ("เจ้าหน้าที่ฝ่ายบุคคล", HR_DEPARTMENT),
+    ("ฝ่าย ES", ES_DEPARTMENT),
+    ("หัวหน้าฝ่าย IT", IT_DEPARTMENT),
 })
 MIN_PASSWORD_LENGTH = 8
 
@@ -128,41 +128,41 @@ def can_edit_manpower(user):
     role = user.get("role")
     department = user.get("dept_name")
 
-    # à¸«à¸±à¸§à¸«à¸™à¹‰à¸²à¸‡à¸²à¸™à¹„à¸”à¹‰à¸£à¸±à¸šà¸ªà¸´à¸—à¸˜à¸´à¹Œà¸•à¸²à¸¡à¸•à¸³à¹à¸«à¸™à¹ˆà¸‡ à¹‚à¸”à¸¢à¹„à¸¡à¹ˆà¸ˆà¸³à¸à¸±à¸”à¸à¹ˆà¸²à¸¢
-    if role == "à¸«à¸±à¸§à¸«à¸™à¹‰à¸²à¸‡à¸²à¸™":
+    # หัวหน้างานได้รับสิทธิ์ตามตำแหน่ง โดยไม่จำกัดฝ่าย
+    if role == "หัวหน้างาน":
         return True
 
     return (role, department) in EDITABLE_ROLE_DEPARTMENT_PAIRS
 
-# â”€â”€ à¸•à¹‰à¸­à¸‡à¸•à¸±à¹‰à¸‡à¸„à¹ˆà¸²à¸ˆà¸£à¸´à¸‡à¸œà¹ˆà¸²à¸™ environment variable à¹€à¸ªà¸¡à¸­à¹ƒà¸™ production â”€â”€
+# ── ต้องตั้งค่าจริงผ่าน environment variable เสมอใน production ──
 SECRET_KEY = os.environ.get("FLASK_SECRET_KEY")
 if not SECRET_KEY:
-    # à¹‚à¸«à¸¡à¸”à¸žà¸±à¸’à¸™à¸²/à¹€à¸”à¹‚à¸¡à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™: à¸ªà¸¸à¹ˆà¸¡à¸„à¸µà¸¢à¹Œà¹ƒà¸«à¸¡à¹ˆà¸—à¸¸à¸à¸„à¸£à¸±à¹‰à¸‡à¸—à¸µà¹ˆà¸£à¸µà¸ªà¸•à¸²à¸£à¹Œà¸— (à¸œà¸¹à¹‰à¹ƒà¸Šà¹‰à¸ˆà¸°à¸«à¸¥à¸¸à¸” session à¸—à¸¸à¸à¸„à¸£à¸±à¹‰à¸‡à¸—à¸µà¹ˆà¸£à¸µà¸ªà¸•à¸²à¸£à¹Œà¸—)
-    # à¸«à¹‰à¸²à¸¡à¸›à¸¥à¹ˆà¸­à¸¢à¹à¸šà¸šà¸™à¸µà¹‰à¹„à¸›à¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¸ˆà¸£à¸´à¸‡ â€” à¹ƒà¸«à¹‰à¸•à¸±à¹‰à¸‡ FLASK_SECRET_KEY à¹€à¸›à¹‡à¸™à¸„à¹ˆà¸²à¸„à¸‡à¸—à¸µà¹ˆà¸—à¸µà¹ˆà¸ªà¸¸à¹ˆà¸¡à¹„à¸§à¹‰à¸¥à¹ˆà¸§à¸‡à¸«à¸™à¹‰à¸²
-    _safe_print("[à¸„à¸³à¹€à¸•à¸·à¸­à¸™] à¹„à¸¡à¹ˆà¸žà¸š FLASK_SECRET_KEY à¹ƒà¸™ environment â€” à¹ƒà¸Šà¹‰à¸„à¸µà¸¢à¹Œà¸ªà¸¸à¹ˆà¸¡à¸Šà¸±à¹ˆà¸§à¸„à¸£à¸²à¸§ (à¸«à¹‰à¸²à¸¡à¹ƒà¸Šà¹‰à¹ƒà¸™ production)")
+    # โหมดพัฒนา/เดโมเท่านั้น: สุ่มคีย์ใหม่ทุกครั้งที่รีสตาร์ท (ผู้ใช้จะหลุด session ทุกครั้งที่รีสตาร์ท)
+    # ห้ามปล่อยแบบนี้ไปใช้งานจริง — ให้ตั้ง FLASK_SECRET_KEY เป็นค่าคงที่ที่สุ่มไว้ล่วงหน้า
+    _safe_print("[คำเตือน] ไม่พบ FLASK_SECRET_KEY ใน environment — ใช้คีย์สุ่มชั่วคราว (ห้ามใช้ใน production)")
     SECRET_KEY = secrets.token_hex(32)
 
 COOKIE_SECURE_ENV = os.environ.get("COOKIE_SECURE")
 if COOKIE_SECURE_ENV is None:
-    # à¸–à¹‰à¸²à¹„à¸¡à¹ˆà¹„à¸”à¹‰à¸•à¸±à¹‰à¸‡à¸„à¹ˆà¸²à¸•à¸±à¸§à¹à¸›à¸£ COOKIE_SECURE à¹„à¸§à¹‰ à¹à¸¥à¸°à¸à¸³à¸¥à¸±à¸‡à¸£à¸±à¸™à¹ƒà¸™à¹‚à¸«à¸¡à¸”à¸—à¸”à¸ªà¸­à¸š/à¸žà¸±à¸’à¸™à¸²
-    # à¸ˆà¸°à¹ƒà¸Šà¹‰ session cookie à¹à¸šà¸š non-secure à¹€à¸žà¸·à¹ˆà¸­à¹ƒà¸«à¹‰à¹à¸­à¸›à¸—à¸³à¸‡à¸²à¸™à¸œà¹ˆà¸²à¸™ HTTP à¸šà¸™ localhost à¹„à¸”à¹‰
+    # ถ้าไม่ได้ตั้งค่าตัวแปร COOKIE_SECURE ไว้ และกำลังรันในโหมดทดสอบ/พัฒนา
+    # จะใช้ session cookie แบบ non-secure เพื่อให้แอปทำงานผ่าน HTTP บน localhost ได้
     COOKIE_SECURE = False
-    _safe_print("[INFO] COOKIE_SECURE à¹„à¸¡à¹ˆà¹„à¸”à¹‰à¸•à¸±à¹‰à¸‡à¸„à¹ˆà¸²à¹„à¸§à¹‰ â€” à¹ƒà¸Šà¹‰ session cookie à¹à¸šà¸š non-secure à¸ªà¸³à¸«à¸£à¸±à¸šà¸à¸²à¸£à¸žà¸±à¸’à¸™à¸² HTTP à¸—à¹‰à¸­à¸‡à¸–à¸´à¹ˆà¸™")
+    _safe_print("[INFO] COOKIE_SECURE ไม่ได้ตั้งค่าไว้ — ใช้ session cookie แบบ non-secure สำหรับการพัฒนา HTTP ท้องถิ่น")
 else:
     COOKIE_SECURE = COOKIE_SECURE_ENV != "0"
 
 app = Flask(__name__)
 app.config.update(
     SECRET_KEY=SECRET_KEY,
-    SESSION_COOKIE_HTTPONLY=True,        # à¸à¸±à¸™ JavaScript à¸­à¹ˆà¸²à¸™ cookie (à¸à¸±à¸™ XSS à¸‚à¹‚à¸¡à¸¢ session)
-    SESSION_COOKIE_SAMESITE="Lax",       # à¸à¸±à¸™ CSRF à¸‚à¹‰à¸²à¸¡à¹€à¸§à¹‡à¸šà¹„à¸‹à¸•à¹Œà¹€à¸šà¸·à¹‰à¸­à¸‡à¸•à¹‰à¸™
-    SESSION_COOKIE_SECURE=COOKIE_SECURE, # à¸ªà¹ˆà¸‡ cookie à¹€à¸‰à¸žà¸²à¸°à¸œà¹ˆà¸²à¸™ HTTPS (à¸›à¸´à¸”à¹„à¸”à¹‰à¹€à¸‰à¸žà¸²à¸°à¸•à¸­à¸™ dev à¸œà¹ˆà¸²à¸™ http)
+    SESSION_COOKIE_HTTPONLY=True,        # กัน JavaScript อ่าน cookie (กัน XSS ขโมย session)
+    SESSION_COOKIE_SAMESITE="Lax",       # กัน CSRF ข้ามเว็บไซต์เบื้องต้น
+    SESSION_COOKIE_SECURE=COOKIE_SECURE, # ส่ง cookie เฉพาะผ่าน HTTPS (ปิดได้เฉพาะตอน dev ผ่าน http)
     PERMANENT_SESSION_LIFETIME=timedelta(hours=SESSION_HOURS),
     JSON_SORT_KEYS=False,
 )
 
-# static_folder=None à¹‚à¸”à¸¢à¸•à¸±à¹‰à¸‡à¹ƒà¸ˆ: à¸–à¹‰à¸²à¹€à¸›à¸´à¸”à¹„à¸§à¹‰à¸žà¸£à¹‰à¸­à¸¡ static_folder=BASE_DIR à¸ˆà¸°à¸—à¸³à¹ƒà¸«à¹‰à¸—à¸¸à¸à¹„à¸Ÿà¸¥à¹Œà¹ƒà¸™à¹‚à¸Ÿà¸¥à¹€à¸”à¸­à¸£à¹Œà¸™à¸µà¹‰
-# (app.py, manpower_map.db à¸¯à¸¥à¸¯) à¸–à¸¹à¸à¹€à¸‚à¹‰à¸²à¸–à¸¶à¸‡à¸œà¹ˆà¸²à¸™ URL à¹„à¸”à¹‰à¹‚à¸”à¸¢à¸•à¸£à¸‡ à¹€à¸£à¸²à¸ˆà¸¶à¸‡à¹€à¸›à¸´à¸”à¹€à¸‰à¸žà¸²à¸°à¹„à¸Ÿà¸¥à¹Œà¸—à¸µà¹ˆà¸•à¸±à¹‰à¸‡à¹ƒà¸ˆà¸œà¹ˆà¸²à¸™ route à¸”à¹‰à¸²à¸™à¸¥à¹ˆà¸²à¸‡
+# static_folder=None โดยตั้งใจ: ถ้าเปิดไว้พร้อม static_folder=BASE_DIR จะทำให้ทุกไฟล์ในโฟลเดอร์นี้
+# (app.py, manpower_map.db ฯลฯ) ถูกเข้าถึงผ่าน URL ได้โดยตรง เราจึงเปิดเฉพาะไฟล์ที่ตั้งใจผ่าน route ด้านล่าง
 
 
 # ---------------------------------------------------------------------------
@@ -193,8 +193,8 @@ def log_attempt(db, emp_id, success):
 
 
 # ---------------------------------------------------------------------------
-# à¸›à¹‰à¸­à¸‡à¸à¸±à¸™à¸à¸²à¸£à¸¢à¸´à¸‡à¸¥à¸­à¸‡ login à¸–à¸µà¹ˆà¹† (brute force) à¹à¸šà¸šà¸‡à¹ˆà¸²à¸¢ à¹† à¸•à¹ˆà¸­ IP â€” à¹€à¸ªà¸£à¸´à¸¡à¸ˆà¸²à¸à¸•à¸±à¸§à¸¥à¹‡à¸­à¸à¸šà¸±à¸à¸Šà¸µà¹ƒà¸™ DB
-# à¸«à¸¡à¸²à¸¢à¹€à¸«à¸•à¸¸: à¸–à¹‰à¸² deploy à¸«à¸¥à¸²à¸¢ process/à¸«à¸¥à¸²à¸¢à¹€à¸„à¸£à¸·à¹ˆà¸­à¸‡ à¹ƒà¸«à¹‰à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¹„à¸›à¹ƒà¸Šà¹‰ Redis à¹à¸—à¸™ dict à¹ƒà¸™à¸«à¸™à¹ˆà¸§à¸¢à¸„à¸§à¸²à¸¡à¸ˆà¸³à¸™à¸µà¹‰
+# ป้องกันการยิงลอง login ถี่ๆ (brute force) แบบง่าย ๆ ต่อ IP — เสริมจากตัวล็อกบัญชีใน DB
+# หมายเหตุ: ถ้า deploy หลาย process/หลายเครื่อง ให้เปลี่ยนไปใช้ Redis แทน dict ในหน่วยความจำนี้
 # ---------------------------------------------------------------------------
 _login_attempts_by_ip = defaultdict(deque)
 _register_attempts_by_ip = defaultdict(deque)
@@ -251,8 +251,8 @@ def destroy_session(db):
 
 
 def current_user():
-    """à¸„à¸·à¸™à¸„à¹ˆà¸² dict à¸œà¸¹à¹‰à¹ƒà¸Šà¹‰à¸›à¸±à¸ˆà¸ˆà¸¸à¸šà¸±à¸™à¸–à¹‰à¸² session à¸¢à¸±à¸‡à¹ƒà¸Šà¹‰à¹„à¸”à¹‰à¸ˆà¸£à¸´à¸‡ (à¸•à¸£à¸§à¸ˆà¸à¸±à¸šà¸•à¸²à¸£à¸²à¸‡ sessions à¸—à¸¸à¸à¸„à¸£à¸±à¹‰à¸‡
-    à¹€à¸žà¸·à¹ˆà¸­à¹ƒà¸«à¹‰ revoke/à¸«à¸¡à¸”à¸­à¸²à¸¢à¸¸à¹„à¸”à¹‰à¸ˆà¸£à¸´à¸‡à¸à¸±à¹ˆà¸‡ server à¹„à¸¡à¹ˆà¹ƒà¸Šà¹ˆà¹€à¸Šà¸·à¹ˆà¸­ cookie à¹€à¸žà¸µà¸¢à¸‡à¸­à¸¢à¹ˆà¸²à¸‡à¹€à¸”à¸µà¸¢à¸§), à¸„à¸·à¸™ None à¸–à¹‰à¸²à¹„à¸¡à¹ˆà¹ƒà¸Šà¹ˆ
+    """คืนค่า dict ผู้ใช้ปัจจุบันถ้า session ยังใช้ได้จริง (ตรวจกับตาราง sessions ทุกครั้ง
+    เพื่อให้ revoke/หมดอายุได้จริงฝั่ง server ไม่ใช่เชื่อ cookie เพียงอย่างเดียว), คืน None ถ้าไม่ใช่
     """
     emp_id = session.get("emp_id")
     token = session.get("token")
@@ -279,7 +279,7 @@ def current_user():
         session.clear()
         return None
 
-    # à¸­à¹ˆà¸²à¸™ role/department à¹ƒà¸«à¸¡à¹ˆà¸ˆà¸²à¸ DB à¸—à¸¸à¸ request à¹€à¸žà¸·à¹ˆà¸­à¹ƒà¸«à¹‰à¸à¸²à¸£à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸ªà¸´à¸—à¸˜à¸´à¹Œà¸¡à¸µà¸œà¸¥à¸—à¸±à¸™à¸—à¸µ
+    # อ่าน role/department ใหม่จาก DB ทุก request เพื่อให้การเปลี่ยนสิทธิ์มีผลทันที
     return {
         "emp_id": emp_id,
         "role": row["role"],
@@ -294,7 +294,7 @@ def login_required(view):
     def wrapped(*args, **kwargs):
         user = current_user()
         if user is None:
-            return jsonify(success=False, message="à¸à¸£à¸¸à¸“à¸²à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¸£à¸°à¸šà¸šà¸à¹ˆà¸­à¸™à¹ƒà¸Šà¹‰à¸‡à¸²à¸™"), 401
+            return jsonify(success=False, message="กรุณาเข้าสู่ระบบก่อนใช้งาน"), 401
         g.current_user = user
         return view(*args, **kwargs)
     return wrapped
@@ -306,9 +306,9 @@ def role_required(*roles):
         def wrapped(*args, **kwargs):
             user = getattr(g, "current_user", None) or current_user()
             if user is None:
-                return jsonify(success=False, message="à¸à¸£à¸¸à¸“à¸²à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¸£à¸°à¸šà¸šà¸à¹ˆà¸­à¸™à¹ƒà¸Šà¹‰à¸‡à¸²à¸™"), 401
+                return jsonify(success=False, message="กรุณาเข้าสู่ระบบก่อนใช้งาน"), 401
             if user["role"] not in roles:
-                return jsonify(success=False, message="à¸„à¸¸à¸“à¹„à¸¡à¹ˆà¸¡à¸µà¸ªà¸´à¸—à¸˜à¸´à¹Œà¸—à¸³à¸£à¸²à¸¢à¸à¸²à¸£à¸™à¸µà¹‰"), 403
+                return jsonify(success=False, message="คุณไม่มีสิทธิ์ทำรายการนี้"), 403
             g.current_user = user
             return view(*args, **kwargs)
         return wrapped
@@ -316,16 +316,16 @@ def role_required(*roles):
 
 
 def edit_permission_required(view):
-    """à¸­à¸™à¸¸à¸à¸²à¸•à¹ƒà¸«à¹‰à¹à¸à¹‰à¹„à¸‚à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹€à¸‰à¸žà¸²à¸°à¸•à¸³à¹à¸«à¸™à¹ˆà¸‡à¸—à¸µà¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¸ªà¸´à¸—à¸˜à¸´à¹Œà¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™."""
+    """อนุญาตให้แก้ไขข้อมูลเฉพาะตำแหน่งที่ได้รับสิทธิ์เท่านั้น."""
     @wraps(view)
     def wrapped(*args, **kwargs):
         user = getattr(g, "current_user", None) or current_user()
         if user is None:
-            return jsonify(success=False, message="à¸à¸£à¸¸à¸“à¸²à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¸£à¸°à¸šà¸šà¸à¹ˆà¸­à¸™à¹ƒà¸Šà¹‰à¸‡à¸²à¸™"), 401
+            return jsonify(success=False, message="กรุณาเข้าสู่ระบบก่อนใช้งาน"), 401
         if not can_edit_manpower(user):
             return jsonify(
                 success=False,
-                message="à¸„à¸¸à¸“à¹„à¸¡à¹ˆà¸¡à¸µà¸ªà¸´à¸—à¸˜à¸´à¹Œà¹à¸à¹‰à¹„à¸‚à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸ªà¸³à¸«à¸£à¸±à¸šà¸•à¸³à¹à¸«à¸™à¹ˆà¸‡à¸‚à¸­à¸‡à¸„à¸¸à¸“",
+                message="คุณไม่มีสิทธิ์แก้ไขข้อมูลพนักงานสำหรับตำแหน่งของคุณ",
             ), 403
         g.current_user = user
         return view(*args, **kwargs)
@@ -333,13 +333,13 @@ def edit_permission_required(view):
 
 
 def require_ajax(view):
-    """à¹€à¸Šà¹‡à¸„ header à¹à¸šà¸šà¸‡à¹ˆà¸²à¸¢à¹† à¹€à¸žà¸·à¹ˆà¸­à¸¥à¸”à¸„à¸§à¸²à¸¡à¹€à¸ªà¸µà¹ˆà¸¢à¸‡ CSRF à¸ªà¸³à¸«à¸£à¸±à¸š endpoint à¸—à¸µà¹ˆà¹à¸à¹‰à¹„à¸‚à¸‚à¹‰à¸­à¸¡à¸¹à¸¥
-    (à¹ƒà¸Šà¹‰à¸£à¹ˆà¸§à¸¡à¸à¸±à¸š SameSite=Lax cookie à¹à¸¥à¸° Content-Type: application/json à¸—à¸µà¹ˆà¸šà¸±à¸‡à¸„à¸±à¸š CORS preflight à¸­à¸¢à¸¹à¹ˆà¹à¸¥à¹‰à¸§)
+    """เช็ค header แบบง่ายๆ เพื่อลดความเสี่ยง CSRF สำหรับ endpoint ที่แก้ไขข้อมูล
+    (ใช้ร่วมกับ SameSite=Lax cookie และ Content-Type: application/json ที่บังคับ CORS preflight อยู่แล้ว)
     """
     @wraps(view)
     def wrapped(*args, **kwargs):
         if request.headers.get("X-Requested-With") != "XMLHttpRequest":
-            return jsonify(success=False, message="à¸„à¸³à¸‚à¸­à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 403
+            return jsonify(success=False, message="คำขอไม่ถูกต้อง"), 403
         return view(*args, **kwargs)
     return wrapped
 
@@ -353,11 +353,11 @@ EMP_ID_RE = re.compile(r"^[A-Za-z0-9_\-]{1,32}$")
 # in the existing shift column avoids requiring a database migration.
 ALLOWED_SHIFTS = ("White", "Yellow", "Day", "Newcomer", "Newcomer-White", "Newcomer-Yellow", "")
 ALLOWED_NODE_TYPES = ("staff", "object")
-# à¸›à¸£à¸°à¹€à¸ à¸—à¸à¸²à¸£à¸‚à¸²à¸”à¸‡à¸²à¸™/à¸¥à¸² à¸•à¹‰à¸­à¸‡à¸•à¸£à¸‡à¸à¸±à¸š CHECK constraint à¹ƒà¸™à¸•à¸²à¸£à¸²à¸‡ attendance (migrate_attendance.py) à¹€à¸›à¹Šà¸° à¹†
-ALLOWED_ATTENDANCE_TYPES = ("à¸‚à¸²à¸”à¸‡à¸²à¸™", "à¸¥à¸²à¸›à¹ˆà¸§à¸¢", "à¸¥à¸²à¸à¸´à¸ˆ", "à¸¥à¸²à¸žà¸±à¸à¸£à¹‰à¸­à¸™", "à¸¡à¸²à¸ªà¸²à¸¢", "à¸­à¸·à¹ˆà¸™à¹†")
+# ประเภทการขาดงาน/ลา ต้องตรงกับ CHECK constraint ในตาราง attendance (migrate_attendance.py) เป๊ะ ๆ
+ALLOWED_ATTENDANCE_TYPES = ("ขาดงาน", "ลาป่วย", "ลากิจ", "ลาพักร้อน", "มาสาย", "อื่นๆ")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-# à¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­ Process à¸•à¹‰à¸­à¸‡à¸•à¸£à¸‡à¸à¸±à¸šà¸›à¸¸à¹ˆà¸¡à¸à¸£à¸­à¸‡à¹ƒà¸™ main.html (#processSelector) à¹€à¸›à¹Šà¸° à¹† à¹€à¸žà¸·à¹ˆà¸­à¹ƒà¸«à¹‰à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸—à¸µà¹ˆà¸ªà¸¡à¸±à¸„à¸£
-# à¸œà¹ˆà¸²à¸™à¸«à¸™à¹‰à¸²à¸™à¸µà¹‰à¸–à¸¹à¸à¸ˆà¸±à¸”à¸à¸¥à¸¸à¹ˆà¸¡/à¸à¸£à¸­à¸‡à¸–à¸¹à¸à¸•à¹‰à¸­à¸‡à¸—à¸±à¸™à¸—à¸µà¹ƒà¸™à¸«à¸™à¹‰à¸²à¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹à¸¥à¸°à¹à¸œà¸™à¸œà¸±à¸‡à¹‚à¸£à¸‡à¸‡à¸²à¸™
+# รายชื่อ Process ต้องตรงกับปุ่มกรองใน main.html (#processSelector) เป๊ะ ๆ เพื่อให้พนักงานที่สมัคร
+# ผ่านหน้านี้ถูกจัดกลุ่ม/กรองถูกต้องทันทีในหน้ารายชื่อพนักงานและแผนผังโรงงาน
 PROCESS_NAMES = (
     "CAB3 and Fr. Floor",
     "Rr. Floor",
@@ -375,13 +375,13 @@ def clean_text(value, max_len=255):
     if value is None:
         return ""
     text = str(value).strip()[:max_len]
-    # à¸•à¸±à¸”à¸­à¸±à¸à¸‚à¸£à¸°à¸—à¸µà¹ˆà¹ƒà¸Šà¹‰à¸à¸±à¸‡ HTML/script à¸­à¸­à¸à¸•à¸±à¹‰à¸‡à¹à¸•à¹ˆà¸à¸±à¹ˆà¸‡ server (defense-in-depth, front-end escape à¸”à¹‰à¸§à¸¢à¹à¸¥à¹‰à¸§)
+    # ตัดอักขระที่ใช้ฝัง HTML/script ออกตั้งแต่ฝั่ง server (defense-in-depth, front-end escape ด้วยแล้ว)
     text = re.sub(r"[<>]", "", text)
     return text
 
 
 # ---------------------------------------------------------------------------
-# Page routes â€” à¹€à¸›à¸´à¸”à¹€à¸‰à¸žà¸²à¸°à¹„à¸Ÿà¸¥à¹Œà¸—à¸µà¹ˆà¸•à¸±à¹‰à¸‡à¹ƒà¸ˆà¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™ à¹„à¸¡à¹ˆà¹€à¸›à¸´à¸”à¸—à¸±à¹‰à¸‡à¹‚à¸Ÿà¸¥à¹€à¸”à¸­à¸£à¹Œ
+# Page routes — เปิดเฉพาะไฟล์ที่ตั้งใจเท่านั้น ไม่เปิดทั้งโฟลเดอร์
 # ---------------------------------------------------------------------------
 
 @app.after_request
@@ -419,8 +419,8 @@ def serve_attendance_page():
 
 @app.route("/img/<path:filename>")
 def serve_image(filename):
-    """à¹€à¸ªà¸´à¸£à¹Œà¸Ÿà¸£à¸¹à¸›à¹à¸œà¸™à¸œà¸±à¸‡à¹‚à¸£à¸‡à¸‡à¸²à¸™/à¹‚à¸‹à¸™à¸•à¹ˆà¸²à¸‡à¹† à¹ƒà¸«à¹‰ main.html
-    à¸–à¹‰à¸²à¹„à¸¡à¹ˆà¸¡à¸µà¹„à¸Ÿà¸¥à¹Œà¸ à¸²à¸žà¸ˆà¸£à¸´à¸‡ à¸ˆà¸°à¸„à¸·à¸™ SVG placeholder à¹€à¸žà¸·à¹ˆà¸­à¹ƒà¸«à¹‰à¸•à¸­à¸™à¸—à¸”à¸ªà¸­à¸šà¸¢à¸±à¸‡à¹€à¸«à¹‡à¸™à¹à¸œà¸™à¸œà¸±à¸‡à¹„à¸”à¹‰
+    """เสิร์ฟรูปแผนผังโรงงาน/โซนต่างๆ ให้ main.html
+    ถ้าไม่มีไฟล์ภาพจริง จะคืน SVG placeholder เพื่อให้ตอนทดสอบยังเห็นแผนผังได้
     """
     os.makedirs(IMG_DIR, exist_ok=True)
 
@@ -437,8 +437,8 @@ def serve_image(filename):
       <rect x='30' y='30' width='1540' height='840' rx='24' fill='#ffffff' stroke='#cbd5e1' stroke-width='3'/>
       <rect x='70' y='70' width='1460' height='120' rx='16' fill='#800000' opacity='0.08'/>
       <text x='800' y='430' text-anchor='middle' font-family='Segoe UI, Arial, sans-serif' font-size='48' font-weight='700' fill='#800000'>{label}</text>
-      <text x='800' y='490' text-anchor='middle' font-family='Segoe UI, Arial, sans-serif' font-size='24' fill='#64748b'>à¸ à¸²à¸žà¹à¸œà¸™à¸œà¸±à¸‡à¸ˆà¸°à¸–à¸¹à¸à¹à¸ªà¸”à¸‡à¸—à¸µà¹ˆà¸™à¸µà¹ˆà¹€à¸¡à¸·à¹ˆà¸­à¸¡à¸µà¹„à¸Ÿà¸¥à¹Œà¸ˆà¸£à¸´à¸‡</text>
-      <text x='800' y='535' text-anchor='middle' font-family='Segoe UI, Arial, sans-serif' font-size='20' fill='#94a3b8'>à¸£à¸°à¸šà¸šà¸à¸³à¸¥à¸±à¸‡à¹ƒà¸Šà¹‰ placeholder à¹à¸šà¸šà¸­à¸±à¸•à¹‚à¸™à¸¡à¸±à¸•à¸´</text>
+      <text x='800' y='490' text-anchor='middle' font-family='Segoe UI, Arial, sans-serif' font-size='24' fill='#64748b'>ภาพแผนผังจะถูกแสดงที่นี่เมื่อมีไฟล์จริง</text>
+      <text x='800' y='535' text-anchor='middle' font-family='Segoe UI, Arial, sans-serif' font-size='20' fill='#94a3b8'>ระบบกำลังใช้ placeholder แบบอัตโนมัติ</text>
     </svg>"""
     return make_response(svg, 200, {"Content-Type": "image/svg+xml"})
 
@@ -451,7 +451,7 @@ def serve_image(filename):
 def api_login():
     ip = request.remote_addr or "unknown"
     if rate_limited(ip):
-        return jsonify(success=False, message="à¸žà¸¢à¸²à¸¢à¸²à¸¡à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¸£à¸°à¸šà¸šà¸–à¸µà¹ˆà¹€à¸à¸´à¸™à¹„à¸› à¸à¸£à¸¸à¸“à¸²à¸£à¸­à¸ªà¸±à¸à¸„à¸£à¸¹à¹ˆà¹à¸¥à¹‰à¸§à¸¥à¸­à¸‡à¹ƒà¸«à¸¡à¹ˆ"), 429
+        return jsonify(success=False, message="พยายามเข้าสู่ระบบถี่เกินไป กรุณารอสักครู่แล้วลองใหม่"), 429
 
     data = request.get_json(silent=True) or {}
     emp_id = (data.get("Emp_ID") or "").strip()
@@ -459,23 +459,23 @@ def api_login():
     remember = bool(data.get("remember"))
 
     if not emp_id or not password:
-        return jsonify(success=False, message="à¸à¸£à¸¸à¸“à¸²à¸à¸£à¸­à¸à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹à¸¥à¸°à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™à¹ƒà¸«à¹‰à¸„à¸£à¸šà¸–à¹‰à¸§à¸™"), 400
+        return jsonify(success=False, message="กรุณากรอกรหัสพนักงานและรหัสผ่านให้ครบถ้วน"), 400
 
     db = get_db()
     row = db.execute("SELECT * FROM employees WHERE emp_id = ?", (emp_id,)).fetchone()
 
-    # à¹„à¸¡à¹ˆà¸žà¸šà¸œà¸¹à¹‰à¹ƒà¸Šà¹‰ -> à¸•à¸­à¸šà¸‚à¹‰à¸­à¸„à¸§à¸²à¸¡à¸à¸¥à¸²à¸‡ à¹† à¹€à¸žà¸·à¹ˆà¸­à¹„à¸¡à¹ˆà¹ƒà¸«à¹‰à¹€à¸”à¸²à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹„à¸”à¹‰ (à¸›à¹‰à¸­à¸‡à¸à¸±à¸™ user enumeration)
+    # ไม่พบผู้ใช้ -> ตอบข้อความกลาง ๆ เพื่อไม่ให้เดารหัสพนักงานได้ (ป้องกัน user enumeration)
     if row is None:
         log_attempt(db, emp_id, success=False)
-        return jsonify(success=False, message="à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸«à¸£à¸·à¸­à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 401
+        return jsonify(success=False, message="รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง"), 401
 
     if row["status"] == "locked":
         log_attempt(db, emp_id, success=False)
-        return jsonify(success=False, message="à¸šà¸±à¸à¸Šà¸µà¸™à¸µà¹‰à¸–à¸¹à¸à¸¥à¹‡à¸­à¸ à¸à¸£à¸¸à¸“à¸²à¸•à¸´à¸”à¸•à¹ˆà¸­à¸à¹ˆà¸²à¸¢ IT"), 403
+        return jsonify(success=False, message="บัญชีนี้ถูกล็อก กรุณาติดต่อฝ่าย IT"), 403
 
     if row["status"] == "inactive":
         log_attempt(db, emp_id, success=False)
-        return jsonify(success=False, message="à¸šà¸±à¸à¸Šà¸µà¸™à¸µà¹‰à¸–à¸¹à¸à¸£à¸°à¸‡à¸±à¸šà¸à¸²à¸£à¹ƒà¸Šà¹‰à¸‡à¸²à¸™"), 403
+        return jsonify(success=False, message="บัญชีนี้ถูกระงับการใช้งาน"), 403
 
     if not check_password_hash(row["password_hash"], password):
         new_failed = row["failed_attempts"] + 1
@@ -486,9 +486,9 @@ def api_login():
         )
         db.commit()
         log_attempt(db, emp_id, success=False)
-        return jsonify(success=False, message="à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸«à¸£à¸·à¸­à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 401
+        return jsonify(success=False, message="รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง"), 401
 
-    # à¸¥à¹‡à¸­à¸à¸­à¸´à¸™à¸ªà¸³à¹€à¸£à¹‡à¸ˆ: à¸£à¸µà¹€à¸‹à¹‡à¸•à¸•à¸±à¸§à¸™à¸±à¸š, à¸šà¸±à¸™à¸—à¸¶à¸à¹€à¸§à¸¥à¸², à¸ªà¸£à¹‰à¸²à¸‡ session (server-side, httpOnly cookie)
+    # ล็อกอินสำเร็จ: รีเซ็ตตัวนับ, บันทึกเวลา, สร้าง session (server-side, httpOnly cookie)
     db.execute(
         "UPDATE employees SET failed_attempts = 0, last_login_at = ? WHERE emp_id = ?",
         (datetime.utcnow().isoformat(), emp_id),
@@ -513,7 +513,7 @@ def api_logout():
 
 @app.route("/api/session", methods=["GET"])
 def api_session():
-    """à¹ƒà¸«à¹‰ main.html à¹ƒà¸Šà¹‰à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸šà¸ªà¸–à¸²à¸™à¸° login à¸à¸±à¸š server à¸ˆà¸£à¸´à¸‡ à¹à¸—à¸™à¸à¸²à¸£à¹€à¸Šà¸·à¹ˆà¸­ localStorage à¸­à¸¢à¹ˆà¸²à¸‡à¹€à¸”à¸µà¸¢à¸§"""
+    """ให้ main.html ใช้ตรวจสอบสถานะ login กับ server จริง แทนการเชื่อ localStorage อย่างเดียว"""
     user = current_user()
     if user is None:
         return jsonify(success=False), 401
@@ -532,7 +532,7 @@ def api_session():
 
 @app.route("/api/departments", methods=["GET"])
 def api_departments():
-    """à¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­à¹à¸œà¸™à¸ â€” à¹ƒà¸Šà¹‰à¹à¸ªà¸”à¸‡à¹ƒà¸™ dropdown à¸•à¸­à¸™à¸ªà¸¡à¸±à¸„à¸£à¸šà¸±à¸à¸Šà¸µ (à¹„à¸¡à¹ˆà¸•à¹‰à¸­à¸‡ login à¹€à¸žà¸£à¸²à¸°à¹€à¸›à¹‡à¸™à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸—à¸±à¹ˆà¸§à¹„à¸› à¹„à¸¡à¹ˆà¸à¸£à¸°à¸—à¸šà¸„à¸§à¸²à¸¡à¸›à¸¥à¸­à¸”à¸ à¸±à¸¢)"""
+    """รายชื่อแผนก — ใช้แสดงใน dropdown ตอนสมัครบัญชี (ไม่ต้อง login เพราะเป็นข้อมูลทั่วไป ไม่กระทบความปลอดภัย)"""
     db = get_db()
     rows = db.execute("SELECT dept_id, dept_name FROM departments ORDER BY dept_name").fetchall()
     return jsonify(success=True, departments=[{"deptId": r["dept_id"], "deptName": r["dept_name"]} for r in rows])
@@ -540,74 +540,74 @@ def api_departments():
 
 @app.route("/api/processes", methods=["GET"])
 def api_processes():
-    """à¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­ Process à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸” (à¸•à¸£à¸‡à¸à¸±à¸šà¸•à¸±à¸§à¸à¸£à¸­à¸‡à¹ƒà¸™ main.html) â€” à¹ƒà¸Šà¹‰à¹à¸ªà¸”à¸‡à¹ƒà¸™ dropdown à¸•à¸­à¸™à¸ªà¸¡à¸±à¸„à¸£à¸šà¸±à¸à¸Šà¸µ"""
+    """รายชื่อ Process ทั้งหมด (ตรงกับตัวกรองใน main.html) — ใช้แสดงใน dropdown ตอนสมัครบัญชี"""
     return jsonify(success=True, processes=list(PROCESS_NAMES))
 
 
 @app.route("/api/register", methods=["POST"])
 @require_ajax
 def api_register():
-    """à¸ªà¸¡à¸±à¸„à¸£à¸šà¸±à¸à¸Šà¸µà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹ƒà¸«à¸¡à¹ˆà¸”à¹‰à¸§à¸¢à¸•à¸±à¸§à¹€à¸­à¸‡ (à¸ªà¸³à¸«à¸£à¸±à¸šà¸—à¸”à¸ªà¸­à¸š/à¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¸ˆà¸£à¸´à¸‡à¹€à¸šà¸·à¹‰à¸­à¸‡à¸•à¹‰à¸™)
+    """สมัครบัญชีพนักงานใหม่ด้วยตัวเอง (สำหรับทดสอบ/ใช้งานจริงเบื้องต้น)
 
-    à¸‚à¹‰à¸­à¸„à¸§à¸£à¸£à¸°à¸§à¸±à¸‡à¸”à¹‰à¸²à¸™à¸„à¸§à¸²à¸¡à¸›à¸¥à¸­à¸”à¸ à¸±à¸¢à¸—à¸µà¹ˆà¸•à¸±à¹‰à¸‡à¹ƒà¸ˆà¹„à¸§à¹‰:
-    - à¸¢à¸­à¸¡à¸£à¸±à¸šà¹€à¸‰à¸žà¸²à¸° role à¸ˆà¸²à¸à¸Ÿà¸­à¸£à¹Œà¸¡à¸ªà¸¡à¸±à¸„à¸£à¸—à¸µà¹ˆà¹€à¸›à¹‡à¸™ 'à¸žà¸™à¸±à¸à¸‡à¸²à¸™' à¸«à¸£à¸·à¸­ 'à¸«à¸±à¸§à¸«à¸™à¹‰à¸²à¸‡à¸²à¸™'
-      à¹€à¸žà¸·à¹ˆà¸­à¸›à¹‰à¸­à¸‡à¸à¸±à¸™à¸à¸²à¸£à¸•à¸±à¹‰à¸‡à¸ªà¸´à¸—à¸˜à¸´à¹Œà¸ªà¸¹à¸‡à¸à¸§à¹ˆà¸²à¸—à¸µà¹ˆà¸­à¸™à¸¸à¸à¸²à¸•
-    - à¸ˆà¸³à¸à¸±à¸”à¸ˆà¸³à¸™à¸§à¸™à¸„à¸£à¸±à¹‰à¸‡à¸à¸²à¸£à¸ªà¸¡à¸±à¸„à¸£à¸•à¹ˆà¸­ IP à¸à¸±à¸™à¸ªà¹à¸›à¸¡/à¸ªà¸„à¸£à¸´à¸›à¸•à¹Œà¸¢à¸´à¸‡à¸ªà¸¡à¸±à¸„à¸£à¸£à¸±à¸§ à¹†
-    - à¸•à¸£à¸§à¸ˆà¸£à¸¹à¸›à¹à¸šà¸šà¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹à¸¥à¸°à¸„à¸§à¸²à¸¡à¸¢à¸²à¸§à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™à¸‚à¸±à¹‰à¸™à¸•à¹ˆà¸³à¸à¸±à¹ˆà¸‡ server à¹€à¸ªà¸¡à¸­ (à¹„à¸¡à¹ˆà¹€à¸Šà¸·à¹ˆà¸­à¸à¸±à¹ˆà¸‡ client à¸­à¸¢à¹ˆà¸²à¸‡à¹€à¸”à¸µà¸¢à¸§)
-    - à¹à¸ˆà¹‰à¸‡à¸‚à¹‰à¸­à¸„à¸§à¸²à¸¡à¸à¸¥à¸²à¸‡ à¹† à¸–à¹‰à¸²à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸‹à¹‰à¸³ (à¹„à¸¡à¹ˆà¸šà¸­à¸à¸£à¸²à¸¢à¸¥à¸°à¹€à¸­à¸µà¸¢à¸”à¹€à¸à¸´à¸™à¸ˆà¸³à¹€à¸›à¹‡à¸™)
+    ข้อควรระวังด้านความปลอดภัยที่ตั้งใจไว้:
+    - ยอมรับเฉพาะ role จากฟอร์มสมัครที่เป็น 'พนักงาน' หรือ 'หัวหน้างาน'
+      เพื่อป้องกันการตั้งสิทธิ์สูงกว่าที่อนุญาต
+    - จำกัดจำนวนครั้งการสมัครต่อ IP กันสแปม/สคริปต์ยิงสมัครรัว ๆ
+    - ตรวจรูปแบบรหัสพนักงานและความยาวรหัสผ่านขั้นต่ำฝั่ง server เสมอ (ไม่เชื่อฝั่ง client อย่างเดียว)
+    - แจ้งข้อความกลาง ๆ ถ้ารหัสพนักงานซ้ำ (ไม่บอกรายละเอียดเกินจำเป็น)
     """
     ip = request.remote_addr or "unknown"
     if register_rate_limited(ip):
-        return jsonify(success=False, message="à¸žà¸¢à¸²à¸¢à¸²à¸¡à¸ªà¸¡à¸±à¸„à¸£à¸šà¸±à¸à¸Šà¸µà¸–à¸µà¹ˆà¹€à¸à¸´à¸™à¹„à¸› à¸à¸£à¸¸à¸“à¸²à¸£à¸­à¸ªà¸±à¸à¸„à¸£à¸¹à¹ˆà¹à¸¥à¹‰à¸§à¸¥à¸­à¸‡à¹ƒà¸«à¸¡à¹ˆ"), 429
+        return jsonify(success=False, message="พยายามสมัครบัญชีถี่เกินไป กรุณารอสักครู่แล้วลองใหม่"), 429
 
     data = request.get_json(silent=True) or {}
     emp_id = (data.get("Emp_ID") or "").strip()
     full_name = clean_text(data.get("FullName"), 100)
     password = data.get("password") or ""
     confirm_password = data.get("confirmPassword") or ""
-    role_name = (data.get("Role") or "").strip() or "à¸žà¸™à¸±à¸à¸‡à¸²à¸™"
+    role_name = (data.get("Role") or "").strip() or "พนักงาน"
     dept_id = data.get("DeptId")
     process_name = (data.get("ProcessName") or "").strip()
 
     if not emp_id or not full_name or not password:
-        return jsonify(success=False, message="à¸à¸£à¸¸à¸“à¸²à¸à¸£à¸­à¸à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™ à¸Šà¸·à¹ˆà¸­-à¸™à¸²à¸¡à¸ªà¸à¸¸à¸¥ à¹à¸¥à¸°à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™à¹ƒà¸«à¹‰à¸„à¸£à¸šà¸–à¹‰à¸§à¸™"), 400
+        return jsonify(success=False, message="กรุณากรอกรหัสพนักงาน ชื่อ-นามสกุล และรหัสผ่านให้ครบถ้วน"), 400
 
     if not EMP_ID_RE.match(emp_id):
-        return jsonify(success=False, message="à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸•à¹‰à¸­à¸‡à¹€à¸›à¹‡à¸™à¸•à¸±à¸§à¸­à¸±à¸à¸©à¸£/à¸•à¸±à¸§à¹€à¸¥à¸‚ à¸„à¸§à¸²à¸¡à¸¢à¸²à¸§à¹„à¸¡à¹ˆà¹€à¸à¸´à¸™ 32 à¸•à¸±à¸§à¸­à¸±à¸à¸©à¸£"), 400
+        return jsonify(success=False, message="รหัสพนักงานต้องเป็นตัวอักษร/ตัวเลข ความยาวไม่เกิน 32 ตัวอักษร"), 400
 
     if len(password) < MIN_PASSWORD_LENGTH:
-        return jsonify(success=False, message=f"à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™à¸•à¹‰à¸­à¸‡à¸¡à¸µà¸„à¸§à¸²à¸¡à¸¢à¸²à¸§à¸­à¸¢à¹ˆà¸²à¸‡à¸™à¹‰à¸­à¸¢ {MIN_PASSWORD_LENGTH} à¸•à¸±à¸§à¸­à¸±à¸à¸©à¸£"), 400
+        return jsonify(success=False, message=f"รหัสผ่านต้องมีความยาวอย่างน้อย {MIN_PASSWORD_LENGTH} ตัวอักษร"), 400
 
     if password != confirm_password:
-        return jsonify(success=False, message="à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™à¸—à¸±à¹‰à¸‡à¸ªà¸­à¸‡à¸Šà¹ˆà¸­à¸‡à¹„à¸¡à¹ˆà¸•à¸£à¸‡à¸à¸±à¸™"), 400
+        return jsonify(success=False, message="รหัสผ่านทั้งสองช่องไม่ตรงกัน"), 400
 
-    if role_name not in ("à¸žà¸™à¸±à¸à¸‡à¸²à¸™", "à¸«à¸±à¸§à¸«à¸™à¹‰à¸²à¸‡à¸²à¸™"):
-        return jsonify(success=False, message="à¸•à¸³à¹à¸«à¸™à¹ˆà¸‡à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+    if role_name not in ("พนักงาน", "หัวหน้างาน"):
+        return jsonify(success=False, message="ตำแหน่งที่เลือกไม่ถูกต้อง"), 400
 
-    # Process à¹€à¸›à¹‡à¸™à¸—à¸²à¸‡à¹€à¸¥à¸·à¸­à¸ à¹à¸•à¹ˆà¸–à¹‰à¸²à¸ªà¹ˆà¸‡à¸¡à¸²à¸•à¹‰à¸­à¸‡à¸•à¸£à¸‡à¸à¸±à¸šà¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­ Process à¸—à¸µà¹ˆà¸¡à¸µà¸ˆà¸£à¸´à¸‡à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™ (à¸›à¹‰à¸­à¸‡à¸à¸±à¸™à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸¡à¸±à¹ˆà¸§/à¹à¸›à¸¥à¸à¸›à¸¥à¸­à¸¡)
+    # Process เป็นทางเลือก แต่ถ้าส่งมาต้องตรงกับรายชื่อ Process ที่มีจริงเท่านั้น (ป้องกันข้อมูลมั่ว/แปลกปลอม)
     if process_name and process_name not in PROCESS_NAMES:
-        return jsonify(success=False, message="Process à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+        return jsonify(success=False, message="Process ที่เลือกไม่ถูกต้อง"), 400
 
-    # dept_id à¹€à¸›à¹‡à¸™à¸—à¸²à¸‡à¹€à¸¥à¸·à¸­à¸ à¹à¸•à¹ˆà¸–à¹‰à¸²à¸ªà¹ˆà¸‡à¸¡à¸²à¸•à¹‰à¸­à¸‡à¹€à¸›à¹‡à¸™à¹à¸œà¸™à¸à¸—à¸µà¹ˆà¸¡à¸µà¸­à¸¢à¸¹à¹ˆà¸ˆà¸£à¸´à¸‡à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™
+    # dept_id เป็นทางเลือก แต่ถ้าส่งมาต้องเป็นแผนกที่มีอยู่จริงเท่านั้น
     clean_dept_id = None
     if dept_id not in (None, "", "null"):
         try:
             clean_dept_id = int(dept_id)
         except (TypeError, ValueError):
-            return jsonify(success=False, message="à¹à¸œà¸™à¸à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+            return jsonify(success=False, message="แผนกที่เลือกไม่ถูกต้อง"), 400
 
     db = get_db()
 
     if clean_dept_id is not None:
         dept_row = db.execute("SELECT dept_id FROM departments WHERE dept_id = ?", (clean_dept_id,)).fetchone()
         if dept_row is None:
-            return jsonify(success=False, message="à¹à¸œà¸™à¸à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+            return jsonify(success=False, message="แผนกที่เลือกไม่ถูกต้อง"), 400
 
     existing = db.execute("SELECT emp_id FROM employees WHERE emp_id = ?", (emp_id,)).fetchone()
     if existing is not None:
-        return jsonify(success=False, message="à¸¡à¸µà¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸™à¸µà¹‰à¹ƒà¸™à¸£à¸°à¸šà¸šà¸­à¸¢à¸¹à¹ˆà¹à¸¥à¹‰à¸§ à¸à¸£à¸¸à¸“à¸²à¹ƒà¸Šà¹‰à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸­à¸·à¹ˆà¸™à¸«à¸£à¸·à¸­à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¸£à¸°à¸šà¸š"), 409
+        return jsonify(success=False, message="มีรหัสพนักงานนี้ในระบบอยู่แล้ว กรุณาใช้รหัสพนักงานอื่นหรือเข้าสู่ระบบ"), 409
 
-    # role à¸¢à¸­à¸¡à¸£à¸±à¸šà¹€à¸‰à¸žà¸²à¸° 'à¸žà¸™à¸±à¸à¸‡à¸²à¸™' à¸«à¸£à¸·à¸­ 'à¸«à¸±à¸§à¸«à¸™à¹‰à¸²à¸‡à¸²à¸™' à¸—à¸µà¹ˆà¹€à¸¥à¸·à¸­à¸à¹„à¸”à¹‰à¸ˆà¸²à¸à¸Ÿà¸­à¸£à¹Œà¸¡à¸ªà¸¡à¸±à¸„à¸£
+    # role ยอมรับเฉพาะ 'พนักงาน' หรือ 'หัวหน้างาน' ที่เลือกได้จากฟอร์มสมัคร
     password_hash = generate_password_hash(password)
     try:
         db.execute("BEGIN")
@@ -619,22 +619,22 @@ def api_register():
         db.commit()
     except sqlite3.Error as e:
         db.rollback()
-        _safe_print(f"[REGISTER][à¸œà¸´à¸”à¸žà¸¥à¸²à¸”] emp_id={emp_id} à¸¥à¸‡à¸—à¸°à¹€à¸šà¸µà¸¢à¸™à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ: {e}")
-        return jsonify(success=False, message="à¸ªà¸¡à¸±à¸„à¸£à¸šà¸±à¸à¸Šà¸µà¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ à¸à¸£à¸¸à¸“à¸²à¸¥à¸­à¸‡à¹ƒà¸«à¸¡à¹ˆà¸­à¸µà¸à¸„à¸£à¸±à¹‰à¸‡"), 500
+        _safe_print(f"[REGISTER][ผิดพลาด] emp_id={emp_id} ลงทะเบียนไม่สำเร็จ: {e}")
+        return jsonify(success=False, message="สมัครบัญชีไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"), 500
 
-    # à¸¢à¸·à¸™à¸¢à¸±à¸™à¸‹à¹‰à¸³à¸­à¸µà¸à¸„à¸£à¸±à¹‰à¸‡à¸«à¸¥à¸±à¸‡ commit à¸§à¹ˆà¸²à¹à¸–à¸§à¸–à¸¹à¸à¹€à¸‚à¸µà¸¢à¸™à¸¥à¸‡à¹„à¸Ÿà¸¥à¹Œ DB à¸ˆà¸£à¸´à¸‡à¹† à¸à¹ˆà¸­à¸™à¸šà¸­à¸à¸§à¹ˆà¸²à¸ªà¸³à¹€à¸£à¹‡à¸ˆ
-    # (à¸à¸±à¸™à¸à¸£à¸“à¸µà¸ªà¸±à¸šà¸ªà¸™à¹„à¸Ÿà¸¥à¹Œ DB à¸„à¸™à¸¥à¸°à¹„à¸Ÿà¸¥à¹Œ à¸«à¸£à¸·à¸­ silent failure à¸­à¸·à¹ˆà¸™à¹† à¸—à¸µà¹ˆà¹„à¸¡à¹ˆ throw exception)
+    # ยืนยันซ้ำอีกครั้งหลัง commit ว่าแถวถูกเขียนลงไฟล์ DB จริงๆ ก่อนบอกว่าสำเร็จ
+    # (กันกรณีสับสนไฟล์ DB คนละไฟล์ หรือ silent failure อื่นๆ ที่ไม่ throw exception)
     check_row = db.execute("SELECT emp_id FROM employees WHERE emp_id = ?", (emp_id,)).fetchone()
     if check_row is None:
-        _safe_print(f"[REGISTER][à¸œà¸´à¸”à¸žà¸¥à¸²à¸”] emp_id={emp_id} commit à¹à¸¥à¹‰à¸§à¹à¸•à¹ˆà¸«à¸²à¹à¸–à¸§à¹„à¸¡à¹ˆà¹€à¸ˆà¸­ â€” à¹€à¸Šà¹‡à¸„à¸§à¹ˆà¸²à¹„à¸Ÿà¸¥à¹Œ DB à¸–à¸¹à¸à¸•à¹‰à¸­à¸‡à¸«à¸£à¸·à¸­à¹„à¸¡à¹ˆ: {DB_PATH}")
-        return jsonify(success=False, message="à¸ªà¸¡à¸±à¸„à¸£à¸šà¸±à¸à¸Šà¸µà¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ à¸à¸£à¸¸à¸“à¸²à¸¥à¸­à¸‡à¹ƒà¸«à¸¡à¹ˆà¸­à¸µà¸à¸„à¸£à¸±à¹‰à¸‡ (à¸šà¸±à¸™à¸—à¸¶à¸à¸¥à¸‡ DB à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ)"), 500
+        _safe_print(f"[REGISTER][ผิดพลาด] emp_id={emp_id} commit แล้วแต่หาแถวไม่เจอ — เช็คว่าไฟล์ DB ถูกต้องหรือไม่: {DB_PATH}")
+        return jsonify(success=False, message="สมัครบัญชีไม่สำเร็จ กรุณาลองใหม่อีกครั้ง (บันทึกลง DB ไม่สำเร็จ)"), 500
 
-    _safe_print(f"[REGISTER][à¸ªà¸³à¹€à¸£à¹‡à¸ˆ] emp_id={emp_id} full_name={full_name!r} à¸šà¸±à¸™à¸—à¸¶à¸à¸¥à¸‡ {DB_PATH} à¹€à¸£à¸µà¸¢à¸šà¸£à¹‰à¸­à¸¢à¹à¸¥à¹‰à¸§")
-    return jsonify(success=True, message="à¸ªà¸¡à¸±à¸„à¸£à¸šà¸±à¸à¸Šà¸µà¸ªà¸³à¹€à¸£à¹‡à¸ˆ à¸à¸£à¸¸à¸“à¸²à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¸£à¸°à¸šà¸š")
+    _safe_print(f"[REGISTER][สำเร็จ] emp_id={emp_id} full_name={full_name!r} บันทึกลง {DB_PATH} เรียบร้อยแล้ว")
+    return jsonify(success=True, message="สมัครบัญชีสำเร็จ กรุณาเข้าสู่ระบบ")
 
 
 # ---------------------------------------------------------------------------
-# Manpower map node API (à¸•à¸³à¹à¸«à¸™à¹ˆà¸‡à¸«à¸¡à¸¸à¸”à¸šà¸™à¸œà¸±à¸‡à¹‚à¸£à¸‡à¸‡à¸²à¸™)
+# Manpower map node API (ตำแหน่งหมุดบนผังโรงงาน)
 # ---------------------------------------------------------------------------
 
 @app.route("/api/get_manpower", methods=["GET"])
@@ -697,7 +697,7 @@ def api_manpower_summary():
 @app.route("/api/manpower_shift_summary", methods=["GET"])
 @login_required
 def api_manpower_shift_summary():
-    """à¸„à¸·à¸™à¸„à¹ˆà¸²à¸ˆà¸³à¸™à¸§à¸™à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸šà¸™à¹à¸œà¸™à¸—à¸µà¹ˆà¹à¸¥à¸°à¸ˆà¸³à¸™à¸§à¸™à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹ƒà¸™à¸£à¸°à¸šà¸š à¹à¸¢à¸à¸•à¸²à¸¡à¸à¸° (shift)
+    """คืนค่าจำนวนพนักงานบนแผนที่และจำนวนพนักงานในระบบ แยกตามกะ (shift)
     Response example:
     {
       "success": true,
@@ -753,16 +753,16 @@ def api_save_manpower():
     if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         data = request.get_json(silent=True)
     else:
-        # request à¸ˆà¸²à¸ sendBeacon à¸­à¸²à¸ˆà¹„à¸¡à¹ˆà¸¡à¸µ header à¹à¸šà¸š AJAX
+        # request จาก sendBeacon อาจไม่มี header แบบ AJAX
         try:
             data = json.loads(request.get_data(as_text=True) or "null")
         except json.JSONDecodeError:
             data = None
 
     if not isinstance(data, list):
-        return jsonify(success=False, message="à¸£à¸¹à¸›à¹à¸šà¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+        return jsonify(success=False, message="รูปแบบข้อมูลไม่ถูกต้อง"), 400
     if len(data) > 5000:
-        return jsonify(success=False, message="à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸¡à¸²à¸à¹€à¸à¸´à¸™à¹„à¸›"), 400
+        return jsonify(success=False, message="ข้อมูลมากเกินไป"), 400
 
     cleaned = []
     placed_staff_ids = set()
@@ -783,7 +783,7 @@ def api_save_manpower():
             if staff_id in placed_staff_ids:
                 return jsonify(
                     success=False,
-                    message=f"à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸£à¸«à¸±à¸ª '{staff_id}' à¸–à¸¹à¸à¸§à¸²à¸‡à¸‹à¹‰à¸³à¹ƒà¸™à¹à¸œà¸™à¸œà¸±à¸‡à¹à¸¥à¹‰à¸§",
+                    message=f"พนักงานรหัส '{staff_id}' ถูกวางซ้ำในแผนผังแล้ว",
                 ), 409
             placed_staff_ids.add(staff_id)
         cleaned.append((
@@ -806,7 +806,7 @@ def api_save_manpower():
         db.commit()
     except sqlite3.Error as e:
         db.rollback()
-        return jsonify(success=False, message=f"à¸šà¸±à¸™à¸—à¸¶à¸à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ: {e}"), 500
+        return jsonify(success=False, message=f"บันทึกไม่สำเร็จ: {e}"), 500
 
     revision = db.execute(
         "SELECT COUNT(*) AS count, COALESCE(MAX(rowid), 0) AS last_rowid FROM manpower_nodes"
@@ -815,7 +815,7 @@ def api_save_manpower():
 
 
 # ---------------------------------------------------------------------------
-# Staff list API (à¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­à¸žà¸™à¸±à¸à¸‡à¸²à¸™)
+# Staff list API (รายชื่อพนักงาน)
 # ---------------------------------------------------------------------------
 
 def row_to_staff_dict(r):
@@ -868,7 +868,7 @@ def api_get_employee_list():
     def category_for(row):
         # If there is a role in employees table, use it; otherwise assume line worker
         role = row["role"]
-        if not role or role == "à¸žà¸™à¸±à¸à¸‡à¸²à¸™":
+        if not role or role == "พนักงาน":
             return "line"
         return "officer"
 
@@ -895,9 +895,9 @@ def api_add_staff():
     tm_name = clean_text(data.get("TM_Name"), 150)
 
     if not emp_id or not tm_name:
-        return jsonify(success=False, message="à¸à¸£à¸¸à¸“à¸²à¸à¸£à¸­à¸à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹à¸¥à¸°à¸Šà¸·à¹ˆà¸­"), 400
+        return jsonify(success=False, message="กรุณากรอกรหัสพนักงานและชื่อ"), 400
     if not EMP_ID_RE.match(emp_id):
-        return jsonify(success=False, message="à¸£à¸¹à¸›à¹à¸šà¸šà¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+        return jsonify(success=False, message="รูปแบบรหัสพนักงานไม่ถูกต้อง"), 400
 
     shift = data.get("Shift") or ""
     if shift not in ALLOWED_SHIFTS:
@@ -912,7 +912,7 @@ def api_add_staff():
     db = get_db()
     exists = db.execute("SELECT 1 FROM staff WHERE emp_id = ?", (emp_id,)).fetchone()
     if exists:
-        return jsonify(success=False, message=f"à¸¡à¸µà¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™ '{emp_id}' à¸­à¸¢à¸¹à¹ˆà¹ƒà¸™à¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­à¹à¸¥à¹‰à¸§"), 409
+        return jsonify(success=False, message=f"มีรหัสพนักงาน '{emp_id}' อยู่ในรายชื่อแล้ว"), 409
 
     db.execute(
         "INSERT INTO staff (emp_id, tm_name, process_name, han_tm, process_rank_s, process_rank_q, "
@@ -944,13 +944,13 @@ def api_delete_staff():
     data = request.get_json(silent=True) or {}
     emp_id = clean_text(data.get("Emp_ID"), 32)
     if not emp_id:
-        return jsonify(success=False, message="à¹„à¸¡à¹ˆà¸žà¸šà¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™"), 400
+        return jsonify(success=False, message="ไม่พบรหัสพนักงาน"), 400
 
     db = get_db()
     db.execute("BEGIN")
     try:
-        # à¸¥à¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸—à¸µà¹ˆà¹€à¸à¸µà¹ˆà¸¢à¸§à¸‚à¹‰à¸­à¸‡à¸à¸±à¸šà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸™à¸µà¹‰à¹ƒà¸«à¹‰à¸«à¸¡à¸” (staff, nodes, sessions, employees)
-        # à¹€à¸žà¸´à¹ˆà¸¡à¸¥à¸šà¸•à¸²à¸£à¸²à¸‡à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹€à¸ªà¸£à¸´à¸¡ à¹€à¸Šà¹ˆà¸™ attendance à¹à¸¥à¸° login_logs
+        # ลบข้อมูลที่เกี่ยวข้องกับพนักงานนี้ให้หมด (staff, nodes, sessions, employees)
+        # เพิ่มลบตารางข้อมูลเสริม เช่น attendance และ login_logs
         staff_deleted = db.execute("DELETE FROM staff WHERE emp_id = ?", (emp_id,)).rowcount
         node_deleted = db.execute("DELETE FROM manpower_nodes WHERE staff_id = ?", (emp_id,)).rowcount
         attendance_deleted = db.execute("DELETE FROM attendance WHERE emp_id = ?", (emp_id,)).rowcount
@@ -960,13 +960,13 @@ def api_delete_staff():
         db.commit()
     except sqlite3.Error as e:
         db.rollback()
-        print(f"[DELETE][à¸œà¸´à¸”à¸žà¸¥à¸²à¸”] emp_id={emp_id} à¸¥à¸šà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ: {e}")
-        return jsonify(success=False, message="à¸¥à¸šà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ à¸à¸£à¸¸à¸“à¸²à¸¥à¸­à¸‡à¹ƒà¸«à¸¡à¹ˆà¸­à¸µà¸à¸„à¸£à¸±à¹‰à¸‡"), 500
+        print(f"[DELETE][ผิดพลาด] emp_id={emp_id} ลบพนักงานไม่สำเร็จ: {e}")
+        return jsonify(success=False, message="ลบพนักงานไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"), 500
 
     if staff_deleted == 0 and node_deleted == 0 and attendance_deleted == 0 and login_logs_deleted == 0 and session_deleted == 0 and employee_deleted == 0:
-        return jsonify(success=False, message="à¹„à¸¡à¹ˆà¸žà¸šà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸„à¸™à¸™à¸µà¹‰à¹ƒà¸™à¸£à¸°à¸šà¸š"), 404
+        return jsonify(success=False, message="ไม่พบพนักงานคนนี้ในระบบ"), 404
 
-    return jsonify(success=True, message="à¸¥à¸šà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸­à¸­à¸à¸ˆà¸²à¸à¸£à¸°à¸šà¸šà¹€à¸£à¸µà¸¢à¸šà¸£à¹‰à¸­à¸¢à¹à¸¥à¹‰à¸§")
+    return jsonify(success=True, message="ลบพนักงานออกจากระบบเรียบร้อยแล้ว")
 
 
 @app.route("/api/update_staff", methods=["POST"])
@@ -974,13 +974,13 @@ def api_delete_staff():
 @edit_permission_required
 @require_ajax
 def api_update_staff():
-    """à¸­à¸±à¸žà¹€à¸”à¸—à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸šà¸²à¸‡à¸Ÿà¸´à¸¥à¸”à¹Œ à¹€à¸Šà¹ˆà¸™ à¸Šà¸·à¹ˆà¸­, process, shift, skill, remark"""
+    """อัพเดทข้อมูลพนักงานบางฟิลด์ เช่น ชื่อ, process, shift, skill, remark"""
     data = request.get_json(silent=True) or {}
     emp_id = clean_text(data.get("Emp_ID"), 32)
     if not emp_id or not EMP_ID_RE.match(emp_id):
-        return jsonify(success=False, message="à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+        return jsonify(success=False, message="รหัสพนักงานไม่ถูกต้อง"), 400
 
-    # à¸Ÿà¸´à¸¥à¸”à¹Œà¸—à¸µà¹ˆà¸­à¸™à¸¸à¸à¸²à¸•à¹ƒà¸«à¹‰à¹à¸à¹‰à¹„à¸‚
+    # ฟิลด์ที่อนุญาตให้แก้ไข
     tm_name = clean_text(data.get("TM_Name"), 200)
     process_name = clean_text(data.get("Process_Name"), 100)
     han_tm = clean_text(data.get("Han_TM"), 100)
@@ -990,15 +990,15 @@ def api_update_staff():
     try:
         current_skill = int(data.get("Current_Skill") or 0)
     except Exception:
-        return jsonify(success=False, message="Current_Skill à¸•à¹‰à¸­à¸‡à¹€à¸›à¹‡à¸™à¸•à¸±à¸§à¹€à¸¥à¸‚"), 400
+        return jsonify(success=False, message="Current_Skill ต้องเป็นตัวเลข"), 400
     shift = clean_text(data.get("Shift"), 20)
     start_date = clean_text(data.get("StartDate"), 20)
     remark = clean_text(data.get("Remark"), 500)
 
     if process_name and process_name not in PROCESS_NAMES:
-        return jsonify(success=False, message="Process à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+        return jsonify(success=False, message="Process ไม่ถูกต้อง"), 400
     if shift and shift not in ALLOWED_SHIFTS:
-        return jsonify(success=False, message="Shift à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+        return jsonify(success=False, message="Shift ไม่ถูกต้อง"), 400
 
     db = get_db()
     try:
@@ -1009,20 +1009,20 @@ def api_update_staff():
         db.commit()
     except sqlite3.Error as e:
         db.rollback()
-        print(f"[UPDATE][à¸œà¸´à¸”à¸žà¸¥à¸²à¸”] emp_id={emp_id} à¸­à¸±à¸žà¹€à¸”à¸—à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ: {e}")
-        return jsonify(success=False, message="à¸­à¸±à¸žà¹€à¸”à¸—à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹„à¸¡à¹ˆà¸ªà¸³à¹€à¸£à¹‡à¸ˆ à¸à¸£à¸¸à¸“à¸²à¸¥à¸­à¸‡à¹ƒà¸«à¸¡à¹ˆ"), 500
+        print(f"[UPDATE][ผิดพลาด] emp_id={emp_id} อัพเดทไม่สำเร็จ: {e}")
+        return jsonify(success=False, message="อัพเดทข้อมูลไม่สำเร็จ กรุณาลองใหม่"), 500
 
     if cur.rowcount == 0:
-        return jsonify(success=False, message="à¹„à¸¡à¹ˆà¸žà¸šà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸—à¸µà¹ˆà¸ˆà¸°à¸­à¸±à¸žà¹€à¸”à¸—"), 404
+        return jsonify(success=False, message="ไม่พบพนักงานที่จะอัพเดท"), 404
 
-    # à¸„à¸·à¸™à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸¥à¹ˆà¸²à¸ªà¸¸à¸”à¸‚à¸­à¸‡à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸—à¸µà¹ˆà¸­à¸±à¸žà¹€à¸”à¸—à¹à¸¥à¹‰à¸§
+    # คืนข้อมูลล่าสุดของพนักงานที่อัพเดทแล้ว
     row = db.execute("SELECT emp_id, tm_name, process_name, han_tm, process_rank_s, process_rank_q, process_rank_p, current_skill, shift, start_date, remark FROM staff WHERE emp_id = ?", (emp_id,)).fetchone()
     result = dict(row) if row else {}
     return jsonify(success=True, staff=result)
 
 
 # ---------------------------------------------------------------------------
-# Attendance API (à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸à¸²à¸£à¸‚à¸²à¸”à¸‡à¸²à¸™/à¸¥à¸²/à¸ªà¸²à¸¢ à¸‚à¸­à¸‡à¸žà¸™à¸±à¸à¸‡à¸²à¸™)
+# Attendance API (ข้อมูลการขาดงาน/ลา/สาย ของพนักงาน)
 # ---------------------------------------------------------------------------
 
 def row_to_attendance_dict(r):
@@ -1040,19 +1040,19 @@ def row_to_attendance_dict(r):
 @app.route("/api/attendance/types", methods=["GET"])
 @login_required
 def api_attendance_types():
-    """à¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­à¸›à¸£à¸°à¹€à¸ à¸—à¸à¸²à¸£à¸‚à¸²à¸”/à¸¥à¸² à¸—à¸µà¹ˆà¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¹„à¸”à¹‰ â€” à¹ƒà¸Šà¹‰à¹à¸ªà¸”à¸‡à¹ƒà¸™ dropdown à¸à¸±à¹ˆà¸‡à¸«à¸™à¹‰à¸²à¹€à¸§à¹‡à¸š"""
+    """รายชื่อประเภทการขาด/ลา ที่ใช้งานได้ — ใช้แสดงใน dropdown ฝั่งหน้าเว็บ"""
     return jsonify(success=True, types=list(ALLOWED_ATTENDANCE_TYPES))
 
 
 @app.route("/api/attendance/list", methods=["GET"])
 @login_required
 def api_attendance_list():
-    """à¸”à¸¶à¸‡à¸£à¸²à¸¢à¸à¸²à¸£à¸‚à¸²à¸”à¸‡à¸²à¸™ à¸à¸£à¸­à¸‡à¹„à¸”à¹‰à¸”à¹‰à¸§à¸¢ emp_id, process, shift, à¸„à¹‰à¸™à¸«à¸² à¹à¸¥à¸°/à¸«à¸£à¸·à¸­à¸Šà¹ˆà¸§à¸‡à¹€à¸”à¸·à¸­à¸™ (YYYY-MM à¸œà¹ˆà¸²à¸™ ?month=)"""
+    """ดึงรายการขาดงาน กรองได้ด้วย emp_id, process, shift, ค้นหา และ/หรือช่วงเดือน (YYYY-MM ผ่าน ?month=)"""
     emp_id = clean_text(request.args.get("emp_id", ""), 32)
     process_name = clean_text(request.args.get("process", ""), 100)
     shift = clean_text(request.args.get("shift", ""), 20)
     query_text = clean_text(request.args.get("q", ""), 100)
-    month = clean_text(request.args.get("month", ""), 7)  # à¹€à¸Šà¹ˆà¸™ '2026-07'
+    month = clean_text(request.args.get("month", ""), 7)  # เช่น '2026-07'
 
     query = "SELECT a.* FROM attendance a"
     query += " LEFT JOIN staff s ON s.emp_id = a.emp_id"
@@ -1067,7 +1067,7 @@ def api_attendance_list():
         params.append(process_name)
     if shift:
         if shift not in ALLOWED_SHIFTS:
-            return jsonify(success=False, message="Shift à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+            return jsonify(success=False, message="Shift ไม่ถูกต้อง"), 400
         query += " AND s.shift = ?"
         params.append(shift)
     if query_text:
@@ -1087,8 +1087,8 @@ def api_attendance_list():
 @app.route("/api/attendance/summary", methods=["GET"])
 @login_required
 def api_attendance_summary():
-    """à¸ªà¸£à¸¸à¸›à¸ˆà¸³à¸™à¸§à¸™à¸§à¸±à¸™à¸‚à¸²à¸”/à¸¥à¸² à¹à¸¢à¸à¸•à¸²à¸¡à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹à¸¥à¸°à¸›à¸£à¸°à¹€à¸ à¸— (à¹ƒà¸Šà¹‰à¹à¸ªà¸”à¸‡à¹€à¸›à¹‡à¸™à¸•à¸²à¸£à¸²à¸‡/à¸à¸£à¸²à¸Ÿà¸ªà¸£à¸¸à¸›)
-    à¸£à¸­à¸‡à¸£à¸±à¸šà¸à¸£à¸­à¸‡à¸•à¸²à¸¡ process, shift, à¸„à¹‰à¸™à¸«à¸², à¹€à¸”à¸·à¸­à¸™à¸”à¹‰à¸§à¸¢ ?process=&shift=&q=&month=YYYY-MM
+    """สรุปจำนวนวันขาด/ลา แยกตามพนักงานและประเภท (ใช้แสดงเป็นตาราง/กราฟสรุป)
+    รองรับกรองตาม process, shift, ค้นหา, เดือนด้วย ?process=&shift=&q=&month=YYYY-MM
     """
     process_name = clean_text(request.args.get("process", ""), 100)
     shift = clean_text(request.args.get("shift", ""), 20)
@@ -1109,7 +1109,7 @@ def api_attendance_summary():
         params.append(process_name)
     if shift:
         if shift not in ALLOWED_SHIFTS:
-            return jsonify(success=False, message="Shift à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+            return jsonify(success=False, message="Shift ไม่ถูกต้อง"), 400
         query += " AND s.shift = ?"
         params.append(shift)
     if query_text:
@@ -1151,17 +1151,17 @@ def api_attendance_add():
 
     emp_id = clean_text(data.get("Emp_ID"), 32)
     att_date = clean_text(data.get("Date"), 10)
-    att_type = data.get("Type") or "à¸‚à¸²à¸”à¸‡à¸²à¸™"
+    att_type = data.get("Type") or "ขาดงาน"
     reason = clean_text(data.get("Reason"), 500)
 
     if not emp_id or not att_date:
-        return jsonify(success=False, message="à¸à¸£à¸¸à¸“à¸²à¹€à¸¥à¸·à¸­à¸à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹à¸¥à¸°à¸£à¸°à¸šà¸¸à¸§à¸±à¸™à¸—à¸µà¹ˆ"), 400
+        return jsonify(success=False, message="กรุณาเลือกพนักงานและระบุวันที่"), 400
 
     if not DATE_RE.match(att_date):
-        return jsonify(success=False, message="à¸£à¸¹à¸›à¹à¸šà¸šà¸§à¸±à¸™à¸—à¸µà¹ˆà¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡ (à¸•à¹‰à¸­à¸‡à¹€à¸›à¹‡à¸™ YYYY-MM-DD)"), 400
+        return jsonify(success=False, message="รูปแบบวันที่ไม่ถูกต้อง (ต้องเป็น YYYY-MM-DD)"), 400
 
     if att_type not in ALLOWED_ATTENDANCE_TYPES:
-        return jsonify(success=False, message="à¸›à¸£à¸°à¹€à¸ à¸—à¸à¸²à¸£à¸‚à¸²à¸”/à¸¥à¸²à¹„à¸¡à¹ˆà¸–à¸¹à¸à¸•à¹‰à¸­à¸‡"), 400
+        return jsonify(success=False, message="ประเภทการขาด/ลาไม่ถูกต้อง"), 400
 
     db = get_db()
     staff_row = db.execute(
@@ -1169,7 +1169,7 @@ def api_attendance_add():
         (emp_id, emp_id),
     ).fetchone()
     if staff_row is None:
-        return jsonify(success=False, message=f"à¹„à¸¡à¹ˆà¸žà¸šà¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™ '{emp_id}' à¹ƒà¸™à¸£à¸°à¸šà¸š"), 404
+        return jsonify(success=False, message=f"ไม่พบรหัสพนักงาน '{emp_id}' ในระบบ"), 404
 
     db.execute(
         "INSERT INTO attendance (emp_id, att_date, att_type, reason, recorded_by) "
@@ -1189,40 +1189,41 @@ def api_attendance_delete():
     try:
         att_id = int(data.get("AttId"))
     except (TypeError, ValueError):
-        return jsonify(success=False, message="à¹„à¸¡à¹ˆà¸žà¸šà¸£à¸²à¸¢à¸à¸²à¸£à¸—à¸µà¹ˆà¸•à¹‰à¸­à¸‡à¸à¸²à¸£à¸¥à¸š"), 400
+        return jsonify(success=False, message="ไม่พบรายการที่ต้องการลบ"), 400
 
     db = get_db()
     cur = db.execute("DELETE FROM attendance WHERE att_id = ?", (att_id,))
     db.commit()
 
     if cur.rowcount == 0:
-        return jsonify(success=False, message="à¹„à¸¡à¹ˆà¸žà¸šà¸£à¸²à¸¢à¸à¸²à¸£à¸™à¸µà¹‰"), 404
+        return jsonify(success=False, message="ไม่พบรายการนี้"), 404
     return jsonify(success=True)
 
 
 # ---------------------------------------------------------------------------
-# Error handlers â€” à¹„à¸¡à¹ˆà¹‚à¸Šà¸§à¹Œ stack trace / à¸£à¸²à¸¢à¸¥à¸°à¹€à¸­à¸µà¸¢à¸”à¸ à¸²à¸¢à¹ƒà¸™à¹ƒà¸«à¹‰à¸œà¸¹à¹‰à¹ƒà¸Šà¹‰à¹€à¸«à¹‡à¸™
+# Error handlers — ไม่โชว์ stack trace / รายละเอียดภายในให้ผู้ใช้เห็น
 # ---------------------------------------------------------------------------
 
 @app.errorhandler(404)
 def not_found(e):
-    return jsonify(success=False, message="à¹„à¸¡à¹ˆà¸žà¸šà¸«à¸™à¹‰à¸²à¸—à¸µà¹ˆà¸•à¹‰à¸­à¸‡à¸à¸²à¸£"), 404
+    return jsonify(success=False, message="ไม่พบหน้าที่ต้องการ"), 404
 
 
 @app.errorhandler(500)
 def server_error(e):
-    return jsonify(success=False, message="à¹€à¸à¸´à¸”à¸‚à¹‰à¸­à¸œà¸´à¸”à¸žà¸¥à¸²à¸”à¸ à¸²à¸¢à¹ƒà¸™à¸£à¸°à¸šà¸š"), 500
+    return jsonify(success=False, message="เกิดข้อผิดพลาดภายในระบบ"), 500
 
-
-    print("=" * 60)
-    print(f"à¸à¸³à¸¥à¸±à¸‡à¹ƒà¸Šà¹‰à¸à¸²à¸™à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¹„à¸Ÿà¸¥à¹Œà¸™à¸µà¹‰: {DB_PATH}")
-    print(f"à¹„à¸Ÿà¸¥à¹Œà¸™à¸µà¹‰à¸¡à¸µà¸­à¸¢à¸¹à¹ˆà¸ˆà¸£à¸´à¸‡à¸«à¸£à¸·à¸­à¹„à¸¡à¹ˆ: {os.path.exists(DB_PATH)}")
-    if not os.environ.get("FLASK_SECRET_KEY"):
-        print("!! à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¹„à¸”à¹‰à¸•à¸±à¹‰à¸‡à¸„à¹ˆà¸² FLASK_SECRET_KEY â€” à¹‚à¸«à¸¡à¸”à¸™à¸µà¹‰à¹ƒà¸Šà¹‰à¸—à¸”à¸ªà¸­à¸šà¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™ à¸«à¹‰à¸²à¸¡à¹ƒà¸Šà¹‰à¹ƒà¸™ production !!")
-    print("=" * 60)
-    # debug=False à¹€à¸ªà¸¡à¸­: à¸«à¹‰à¸²à¸¡à¹€à¸›à¸´à¸” debug mode à¹ƒà¸™ production (à¸ˆà¸°à¹€à¸›à¸´à¸”à¸Šà¹ˆà¸­à¸‡à¹ƒà¸«à¹‰à¸£à¸±à¸™à¹‚à¸„à¹‰à¸”à¸ˆà¸²à¸à¸ à¸²à¸¢à¸™à¸­à¸à¹„à¸”à¹‰à¸œà¹ˆà¸²à¸™ debugger)
-    debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
-    app.run(debug=debug_mode)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    print("=" * 60)
+    print(f"กำลังใช้ฐานข้อมูลไฟล์นี้: {DB_PATH}")
+    print(f"ไฟล์นี้มีอยู่จริงหรือไม่: {os.path.exists(DB_PATH)}")
+    if not os.environ.get("FLASK_SECRET_KEY"):
+        print("!! ยังไม่ได้ตั้งค่า FLASK_SECRET_KEY — โหมดนี้ใช้ทดสอบเท่านั้น ห้ามใช้ใน production !!")
+    print("=" * 60)
+    # debug=False เสมอ: ห้ามเปิด debug mode ใน production (จะเปิดช่องให้รันโค้ดจากภายนอกได้ผ่าน debugger)
+    debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
+    host = os.environ.get("FLASK_HOST", "0.0.0.0")
+    port = int(os.environ.get("FLASK_PORT", "5000"))
+    print(f"กำลังรันที่ http://{host}:{port}/")
+    app.run(host=host, port=port, debug=debug_mode)
